@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Class Lessons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-warm-cream: #FDF6E3;
+            --color-terracotta: #C65D3B;
+            --color-deep-brown: #2C1810;
+            --color-sunset: #E8A87C;
+            --color-gold: #D4A853;
+            --color-overlay: rgba(44, 24, 16, 0.65);
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-deep-brown);
+            color: var(--color-warm-cream);
+        }
+
+        .slideshow {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: saturate(0.7) brightness(0.9);
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(44, 24, 16, 0.75) 0%,
+                rgba(198, 93, 59, 0.45) 50%,
+                rgba(44, 24, 16, 0.7) 100%
+            );
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 90%;
+            padding: 2rem;
+        }
+
+        /* Title slide specific */
+        .slide.title-slide .slide-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .title-label {
+            font-family: var(--font-body);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            font-weight: 300;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--color-sunset);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s 0.3s forwards;
+        }
+
+        .title-main {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 10vw, 9rem);
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--color-warm-cream);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s 0.5s forwards;
+        }
+
+        .title-subtitle {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4.5vw, 3.5rem);
+            font-weight: 400;
+            font-style: italic;
+            color: var(--color-gold);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s 0.8s forwards;
+        }
+
+        .title-divider {
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-terracotta), transparent);
+            opacity: 0;
+            animation: fadeIn 1s 1s forwards;
+        }
+
+        .title-instruction {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 1.8vw, 1.4rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: var(--color-warm-cream);
+            opacity: 0;
+            animation: fadeIn 1s 1.2s forwards;
+            margin-top: 1rem;
+        }
+
+        .title-instruction span {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(253, 246, 227, 0.3);
+            border-radius: 4px;
+            margin: 0 0.25rem;
+        }
+
+        /* Question slides */
+        .question-number {
+            font-family: var(--font-display);
+            font-size: clamp(5rem, 14vw, 12rem);
+            font-weight: 700;
+            color: var(--color-terracotta);
+            opacity: 0.15;
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            line-height: 1;
+            transform: translateX(-20px);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s;
+        }
+
+        .slide.active .question-number {
+            transform: translateX(0);
+        }
+
+        .question-text {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 7vw, 6rem);
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--color-warm-cream);
+            text-shadow: 0 3px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(30px);
+            opacity: 0;
+            transition: transform 0.8s 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s 0.2s;
+        }
+
+        .slide.active .question-text {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .question-accent {
+            width: 100px;
+            height: 5px;
+            background: var(--color-gold);
+            margin: 2.5rem auto 0;
+            transform: scaleX(0);
+            transition: transform 0.6s 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active .question-accent {
+            transform: scaleX(1);
+        }
+
+        .example-text {
+            margin-top: 1.5rem;
+            font-size: 3.2rem;
+            line-height: 1.6;
+            color: var(--color-warm-cream);
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            margin-bottom: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .example-text.revealed {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Background color variations for lesson 2 */
+        .bg-color-1 { background: linear-gradient(135deg, #3d2817 0%, #5a3a28 50%, #3d2817 100%); }
+        .bg-color-2 { background: linear-gradient(135deg, #4a2f1a 0%, #6b4423 50%, #4a2f1a 100%); }
+        .bg-color-3 { background: linear-gradient(135deg, #3d341f 0%, #5a4a2e 50%, #3d341f 100%); }
+        .bg-color-4 { background: linear-gradient(135deg, #462418 0%, #6b3a25 50%, #462418 100%); }
+        .bg-color-5 { background: linear-gradient(135deg, #3d2217 0%, #5a3322 50%, #3d2217 100%); }
+        .bg-color-6 { background: linear-gradient(135deg, #44382a 0%, #61523b 50%, #44382a 100%); }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 56px;
+            height: 56px;
+            border: 2px solid rgba(253, 246, 227, 0.4);
+            background: rgba(44, 24, 16, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--color-warm-cream);
+        }
+
+        .nav-btn:hover {
+            background: var(--color-terracotta);
+            border-color: var(--color-terracotta);
+            transform: scale(1.1);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-text {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--color-warm-cream);
+            opacity: 0.8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 3px;
+            background: rgba(253, 246, 227, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-gold);
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        /* Decorative elements */
+        .corner-decor {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(212, 168, 83, 0.2);
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .corner-decor.top-left {
+            top: 2rem;
+            left: 2rem;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decor.bottom-right {
+            bottom: 6rem;
+            right: 2rem;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .nav-container {
+                bottom: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-btn {
+                width: 48px;
+                height: 48px;
+            }
+
+            .progress-bar {
+                width: 80px;
+            }
+
+            .corner-decor {
+                display: none;
+            }
+
+            .slide-content {
+                max-width: 95%;
+                padding: 1rem;
+            }
+        }
+
+        /* Fullscreen mode hint */
+        .fullscreen-hint {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: rgba(253, 246, 227, 0.5);
+            z-index: 100;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(253, 246, 227, 0.2);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-hint:hover {
+            color: var(--color-warm-cream);
+            border-color: rgba(253, 246, 227, 0.5);
+        }
+
+        /* Menu/Home page styles */
+        .menu-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        .lesson-card {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            group: "lesson-card";
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid rgba(212, 168, 83, 0.3);
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(198, 93, 59, 0.3);
+            border-color: var(--color-gold);
+        }
+
+        .lesson-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: saturate(0.6) brightness(0.7);
+            transition: filter 0.3s ease;
+        }
+
+        .lesson-card:hover .lesson-card-bg {
+            filter: saturate(0.8) brightness(0.8);
+        }
+
+        .lesson-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(44, 24, 16, 0.7) 0%, rgba(198, 93, 59, 0.4) 50%, rgba(44, 24, 16, 0.6) 100%);
+        }
+
+        .lesson-card-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .lesson-card:hover .lesson-card-content {
+            transform: translateY(-4px);
+        }
+
+        .lesson-card-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-warm-cream);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .lesson-card-count {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--color-gold);
+            font-weight: 500;
+        }
+
+        /* Menu view */
+        .slide.menu-view {
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .menu-view .slide-content {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .menu-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 700;
+            color: var(--color-warm-cream);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        /* Back to menu button */
+        .back-to-menu-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(44, 24, 16, 0.7);
+            border: 2px solid rgba(212, 168, 83, 0.5);
+            color: var(--color-warm-cream);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 110;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-to-menu-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-menu-btn:hover {
+            background: var(--color-terracotta);
+            border-color: var(--color-terracotta);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .menu-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1rem;
+            }
+
+            .lesson-card {
+                aspect-ratio: auto;
+                min-height: 200px;
+            }
+
+            .menu-title {
+                margin-bottom: 2rem;
+            }
+
+            .back-to-menu-btn {
+                top: 1rem;
+                left: 1rem;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow" id="slideshow">
+        <!-- Home/Menu -->
+        <div class="slide menu-view active" id="homeSlide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="menu-title">Spanish Class</h1>
+                <div class="menu-content" id="menuContent"></div>
+            </div>
+        </div>
+
+        <!-- Lesson 1: La Vida Contemporánea -->
+        <div id="lesson-1" data-lesson="1">
+            <!-- Title Slide -->
+            <div class="slide title-slide" data-bg="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <span class="title-label">Introducción al tema</span>
+                <h1 class="title-main">La Vida Contemporánea</h1>
+                <div class="title-divider"></div>
+                <p class="title-subtitle">Preguntas Rápidas</p>
+                <p class="title-instruction">Usa <span>←</span> <span>→</span> para navegar</p>
+            </div>
+        </div>
+
+        <!-- Question 1 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">01</span>
+            <div class="slide-content">
+                <p class="question-text">¿Cuál es tu película favorita de todos los tiempos y por qué?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">02</span>
+            <div class="slide-content">
+                <p class="question-text">¿Prefieres ver películas en el cine o en casa? ¿Por qué?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">03</span>
+            <div class="slide-content">
+                <p class="question-text">¿Cuál fue el último libro que leíste y qué impresión te dejó?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">04</span>
+            <div class="slide-content">
+                <p class="question-text">¿Tienes alguna serie de televisión que estés viendo actualmente? ¿Recomendarías alguna?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">05</span>
+            <div class="slide-content">
+                <p class="question-text">¿Qué tipo de música te gusta escuchar para relajarte?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">06</span>
+            <div class="slide-content">
+                <p class="question-text">¿Practicas algún deporte o actividad física como parte de tu tiempo de ocio?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">07</span>
+            <div class="slide-content">
+                <p class="question-text">¿Tienes algún videojuego favorito? ¿Cuál es tu género preferido?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">08</span>
+            <div class="slide-content">
+                <p class="question-text">¿Cuál fue la última actividad cultural a la que asististe, como un concierto, una obra de teatro o una exposición de arte?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">09</span>
+            <div class="slide-content">
+                <p class="question-text">¿Disfrutas de actividades al aire libre? ¿Cuál es tu preferida?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">10</span>
+            <div class="slide-content">
+                <p class="question-text">¿Has participado alguna vez en algún evento o festival especial? Cuéntame sobre ello.</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 11 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">11</span>
+            <div class="slide-content">
+                <p class="question-text">¿Cómo sueles pasar tu tiempo libre los fines de semana?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 12 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">12</span>
+            <div class="slide-content">
+                <p class="question-text">¿Tienes algún hobby o pasatiempo que te apasione?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 13 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">13</span>
+            <div class="slide-content">
+                <p class="question-text">¿Eres más de leer libros físicos o utilizar dispositivos electrónicos para leer?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 14 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">14</span>
+            <div class="slide-content">
+                <p class="question-text">¿Tienes una lista de reproducción favorita para diferentes estados de ánimo?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 15 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">15</span>
+            <div class="slide-content">
+                <p class="question-text">¿Hay algún lugar que siempre hayas querido visitar por su valor cultural o recreativo?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 16 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">16</span>
+            <div class="slide-content">
+                <p class="question-text">¿Cómo descubres nuevas películas, libros o música? ¿Tienes alguna fuente de recomendaciones favorita?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 17 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">17</span>
+            <div class="slide-content">
+                <p class="question-text">¿Practicas algún tipo de arte, como la pintura, la fotografía o la escritura, como parte de tu tiempo de ocio?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 18 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">18</span>
+            <div class="slide-content">
+                <p class="question-text">¿Tienes alguna tradición o rutina de entretenimiento que sigas regularmente?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 19 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1520706004282-b0c8d8e6c3c3?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1520706004282-b0c8d8e6c3c3?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">19</span>
+            <div class="slide-content">
+                <p class="question-text">¿Has probado alguna vez actividades de aventura o extremas como paracaidismo, escalada, o algo similar?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+
+        <!-- Question 20 -->
+        <div class="slide" data-bg="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=80">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=80')"></div>
+            <div class="slide-overlay"></div>
+            <span class="question-number">20</span>
+            <div class="slide-content">
+                <p class="question-text">¿Cómo manejas el equilibrio entre el tiempo que pasas en actividades de ocio y tus responsabilidades diarias?</p>
+                <div class="question-accent"></div>
+            </div>
+        </div>
+        </div>
+        <!-- End Lesson 1 -->
+
+        <!-- Lesson 2: Pretérito Indefinido -->
+        <div id="lesson-2" data-lesson="2">
+            <!-- Title Slide -->
+            <div class="slide title-slide" data-bg="https://images.unsplash.com/photo-1503439773649-c0bee877201e?w=1920&q=80">
+                <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1503439773649-c0bee877201e?w=1920&q=80')"></div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <span class="title-label">Conjugación Verbal</span>
+                    <h1 class="title-main">Pretérito Indefinido</h1>
+                    <div class="title-divider"></div>
+                    <p class="title-subtitle">Verbos Irregulares</p>
+                    <p class="title-instruction">Usa <span>←</span> <span>→</span> para navegar</p>
+                </div>
+            </div>
+
+            <!-- IR/SER -->
+            <div class="slide bg-color-1">
+                <span class="question-number">01</span>
+                <div class="slide-content">
+                    <p class="question-text">IR / SER – to go / to be</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">She went to the beach.</p>
+                    <p class="example-text">We went to the park.</p>
+                    <p class="example-text">They went to school.</p>
+                    <p class="example-text">I went to the store.</p>
+                    <p class="example-text">He went to the concert.</p>
+                </div>
+            </div>
+
+            <!-- TENER -->
+            <div class="slide bg-color-2">
+                <span class="question-number">02</span>
+                <div class="slide-content">
+                    <p class="question-text">TENER – to have</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I had a lot of homework.</p>
+                    <p class="example-text">She had a test yesterday.</p>
+                    <p class="example-text">We had a good time.</p>
+                    <p class="example-text">They had a problem.</p>
+                    <p class="example-text">He had a cold.</p>
+                </div>
+            </div>
+
+            <!-- ESTAR -->
+            <div class="slide bg-color-3">
+                <span class="question-number">03</span>
+                <div class="slide-content">
+                    <p class="question-text">ESTAR – to be (location/emotion)</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I was at home.</p>
+                    <p class="example-text">She was at the party.</p>
+                    <p class="example-text">We were in class.</p>
+                    <p class="example-text">They were tired.</p>
+                    <p class="example-text">He was sick.</p>
+                </div>
+            </div>
+
+            <!-- PODER -->
+            <div class="slide bg-color-4">
+                <span class="question-number">04</span>
+                <div class="slide-content">
+                    <p class="question-text">PODER – to be able / can</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I could not go.</p>
+                    <p class="example-text">She could do the homework.</p>
+                    <p class="example-text">We could see the movie.</p>
+                    <p class="example-text">They couldn't finish.</p>
+                    <p class="example-text">He could help.</p>
+                </div>
+            </div>
+
+            <!-- PONER -->
+            <div class="slide bg-color-5">
+                <span class="question-number">05</span>
+                <div class="slide-content">
+                    <p class="question-text">PONER – to put</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I put the book on the table.</p>
+                    <p class="example-text">She put the keys in her purse.</p>
+                    <p class="example-text">We put the chairs outside.</p>
+                    <p class="example-text">They put the food in the kitchen.</p>
+                </div>
+            </div>
+
+            <!-- HACER -->
+            <div class="slide bg-color-6">
+                <span class="question-number">06</span>
+                <div class="slide-content">
+                    <p class="question-text">HACER – to do / to make</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I did my homework.</p>
+                    <p class="example-text">She made a cake.</p>
+                    <p class="example-text">We did the project.</p>
+                    <p class="example-text">They made a mistake.</p>
+                </div>
+            </div>
+
+            <!-- DECIR -->
+            <div class="slide bg-color-1">
+                <span class="question-number">07</span>
+                <div class="slide-content">
+                    <p class="question-text">DECIR – to say / to tell</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I said the answer.</p>
+                    <p class="example-text">She told the truth.</p>
+                    <p class="example-text">We said something important.</p>
+                    <p class="example-text">They told a funny story.</p>
+                </div>
+            </div>
+
+            <!-- TRAER -->
+            <div class="slide bg-color-2">
+                <span class="question-number">08</span>
+                <div class="slide-content">
+                    <p class="question-text">TRAER – to bring</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I brought my backpack.</p>
+                    <p class="example-text">She brought her lunch.</p>
+                    <p class="example-text">We brought the drinks.</p>
+                    <p class="example-text">They brought their books.</p>
+                    <p class="example-text">He brought dessert.</p>
+                </div>
+            </div>
+
+            <!-- VENIR -->
+            <div class="slide bg-color-3">
+                <span class="question-number">09</span>
+                <div class="slide-content">
+                    <p class="question-text">VENIR – to come</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I came late.</p>
+                    <p class="example-text">She came early.</p>
+                    <p class="example-text">We came together.</p>
+                    <p class="example-text">They came yesterday.</p>
+                </div>
+            </div>
+
+            <!-- DAR -->
+            <div class="slide bg-color-4">
+                <span class="question-number">10</span>
+                <div class="slide-content">
+                    <p class="question-text">DAR – to give</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I gave her a gift.</p>
+                    <p class="example-text">She gave me the money.</p>
+                    <p class="example-text">We gave him the books.</p>
+                    <p class="example-text">They gave us directions.</p>
+                </div>
+            </div>
+
+            <!-- ANDAR -->
+            <div class="slide bg-color-5">
+                <span class="question-number">11</span>
+                <div class="slide-content">
+                    <p class="question-text">ANDAR – to walk / to go around</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I walked through the park.</p>
+                    <p class="example-text">She walked to school.</p>
+                    <p class="example-text">We walked around the mall.</p>
+                    <p class="example-text">They walked a lot yesterday.</p>
+                </div>
+            </div>
+
+            <!-- CONDUCIR -->
+            <div class="slide bg-color-6">
+                <span class="question-number">12</span>
+                <div class="slide-content">
+                    <p class="question-text">CONDUCIR – to drive</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I drove to the store.</p>
+                    <p class="example-text">He drove fast.</p>
+                    <p class="example-text">We drove to the mountains.</p>
+                    <p class="example-text">They drove at night.</p>
+                </div>
+            </div>
+
+            <!-- SER (second occurrence) -->
+            <div class="slide bg-color-1">
+                <span class="question-number">13</span>
+                <div class="slide-content">
+                    <p class="question-text">SER – to be (description/origin/identity)</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I was a student.</p>
+                    <p class="example-text">She was my best friend.</p>
+                    <p class="example-text">We were very happy.</p>
+                    <p class="example-text">They were from Spain.</p>
+                </div>
+            </div>
+
+            <!-- TRADUCIR -->
+            <div class="slide bg-color-2">
+                <span class="question-number">14</span>
+                <div class="slide-content">
+                    <p class="question-text">TRADUCIR – to translate</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I translated the letter.</p>
+                    <p class="example-text">She translated the message.</p>
+                    <p class="example-text">We translated the story.</p>
+                    <p class="example-text">They translated the book.</p>
+                </div>
+            </div>
+
+            <!-- VER -->
+            <div class="slide bg-color-3">
+                <span class="question-number">15</span>
+                <div class="slide-content">
+                    <p class="question-text">VER – to see</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I saw the movie.</p>
+                    <p class="example-text">She saw the accident.</p>
+                    <p class="example-text">We saw your brother.</p>
+                    <p class="example-text">They saw a cat.</p>
+                </div>
+            </div>
+
+            <!-- LEER -->
+            <div class="slide bg-color-4">
+                <span class="question-number">16</span>
+                <div class="slide-content">
+                    <p class="question-text">LEER – to read</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I read the whole book.</p>
+                    <p class="example-text">She read the newspaper.</p>
+                    <p class="example-text">We read in class.</p>
+                    <p class="example-text">They read a lot.</p>
+                </div>
+            </div>
+
+            <!-- CREER -->
+            <div class="slide bg-color-5">
+                <span class="question-number">17</span>
+                <div class="slide-content">
+                    <p class="question-text">CREER – to believe</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I believed the story.</p>
+                    <p class="example-text">He believed his friend.</p>
+                    <p class="example-text">We believed everything.</p>
+                    <p class="example-text">They believed the news.</p>
+                </div>
+            </div>
+
+            <!-- OÍR -->
+            <div class="slide bg-color-6">
+                <span class="question-number">18</span>
+                <div class="slide-content">
+                    <p class="question-text">OÍR – to hear</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I heard a noise.</p>
+                    <p class="example-text">She heard music.</p>
+                    <p class="example-text">We heard the teacher.</p>
+                    <p class="example-text">They heard the announcement.</p>
+                </div>
+            </div>
+
+            <!-- CAERSE -->
+            <div class="slide bg-color-1">
+                <span class="question-number">19</span>
+                <div class="slide-content">
+                    <p class="question-text">CAERSE – to fall down</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I fell down yesterday.</p>
+                    <p class="example-text">She fell at school.</p>
+                    <p class="example-text">We fell on the ice.</p>
+                    <p class="example-text">They fell during the game.</p>
+                </div>
+            </div>
+
+            <!-- EMPEZAR -->
+            <div class="slide bg-color-2">
+                <span class="question-number">20</span>
+                <div class="slide-content">
+                    <p class="question-text">EMPEZAR – to start / begin</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I started the homework.</p>
+                    <p class="example-text">She started to cry.</p>
+                    <p class="example-text">We started late.</p>
+                    <p class="example-text">They started the project.</p>
+                </div>
+            </div>
+
+            <!-- BUSCAR -->
+            <div class="slide bg-color-3">
+                <span class="question-number">21</span>
+                <div class="slide-content">
+                    <p class="question-text">BUSCAR – to look for</p>
+                    <div class="question-accent"></div>
+                    <p class="example-text">I looked for my phone.</p>
+                    <p class="example-text">He looked for his shoes.</p>
+                    <p class="example-text">We looked for the address.</p>
+                    <p class="example-text">They looked for a solution.</p>
+                </div>
+            </div>
+        </div>
+        <!-- End Lesson 2 -->
+    </div>
+
+    <!-- Decorative corners -->
+    <div class="corner-decor top-left"></div>
+    <div class="corner-decor bottom-right"></div>
+
+    <!-- Back to menu button -->
+    <button class="back-to-menu-btn" id="backToMenuBtn" onclick="goToHome()">
+        ← Volver al menú
+    </button>
+
+    <!-- Fullscreen hint -->
+    <div class="fullscreen-hint" id="fullscreenHint" onclick="toggleFullscreen()">
+        Presiona F11 para pantalla completa
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <button class="nav-btn" id="prevBtn" aria-label="Anterior">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+        <div class="progress-container">
+            <span class="progress-text" id="progressText">1 / 21</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 4.76%"></div>
+            </div>
+        </div>
+        <button class="nav-btn" id="nextBtn" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+    </nav>
+
+    <script>
+        // Lesson data structure
+        const lessons = [
+            {
+                id: 1,
+                title: 'La Vida Contemporánea',
+                subtitle: 'Preguntas Rápidas',
+                description: '20 Preguntas',
+                image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80'
+            },
+            {
+                id: 2,
+                title: 'Pretérito Indefinido',
+                subtitle: 'Verbos Irregulares',
+                description: '21 Verbos',
+                image: 'https://images.unsplash.com/photo-1503439773649-c0bee877201e?w=1920&q=80'
+            }
+        ];
+
+        let currentSlide = 0;
+        let currentLesson = null;
+        let slides = [];
+
+        let lineRevealState = {
+            currentLine: -1,
+            maxLines: 0
+        };
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+        const backToMenuBtn = document.getElementById('backToMenuBtn');
+        const menuContent = document.getElementById('menuContent');
+        const homeSlide = document.getElementById('homeSlide');
+
+        function populateMenu() {
+            menuContent.innerHTML = lessons.map((lesson, index) => `
+                <div class="lesson-card" onclick="startLesson(${lesson.id})">
+                    <div class="lesson-card-bg" style="background-image: url('${lesson.image}')"></div>
+                    <div class="lesson-card-overlay"></div>
+                    <div class="lesson-card-content">
+                        <h3 class="lesson-card-title">${lesson.title}</h3>
+                        <p class="lesson-card-count">${lesson.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startLesson(lessonId) {
+            const lesson = lessons.find(l => l.id === lessonId);
+            if (!lesson) return;
+
+            currentLesson = lessonId;
+            currentSlide = 0;
+            lineRevealState.currentLine = -1;
+            lineRevealState.maxLines = 0;
+
+            // Update slides array to only include this lesson's slides
+            const lessonContainer = document.getElementById(`lesson-${lessonId}`);
+            slides = Array.from(lessonContainer.querySelectorAll('.slide'));
+
+            updateView();
+        }
+
+        function goToHome() {
+            currentLesson = null;
+            currentSlide = 0;
+            slides = Array.from(document.querySelectorAll('.slide'));
+            updateView();
+        }
+
+        function updateView() {
+            // Hide all lesson containers
+            document.querySelectorAll('[data-lesson]').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Hide home slide
+            homeSlide.style.display = 'none';
+
+            if (currentLesson === null) {
+                // Show home
+                homeSlide.style.display = 'flex';
+                backToMenuBtn.classList.remove('visible');
+                progressText.style.opacity = '0';
+                prevBtn.style.opacity = '0.3';
+                nextBtn.style.opacity = '0.3';
+            } else {
+                // Show lesson
+                const lessonContainer = document.getElementById(`lesson-${currentLesson}`);
+                lessonContainer.style.display = 'contents';
+                backToMenuBtn.classList.add('visible');
+                progressText.style.opacity = '1';
+
+                // Update slides
+                slides = Array.from(lessonContainer.querySelectorAll('.slide'));
+                updateSlideView();
+            }
+        }
+
+        function updateSlideView() {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+
+            // Reset line reveal state for lesson 2
+            if (currentLesson === 2) {
+                const currentSlideElement = slides[currentSlide];
+                const exampleTexts = currentSlideElement.querySelectorAll('.example-text');
+
+                // Hide all example texts initially
+                exampleTexts.forEach(text => text.classList.remove('revealed'));
+
+                // Reset state
+                lineRevealState.currentLine = -1;
+                lineRevealState.maxLines = exampleTexts.length;
+            }
+
+            const totalSlides = slides.length;
+            progressText.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            progressFill.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+            prevBtn.style.opacity = currentSlide === 0 ? '0.3' : '1';
+            nextBtn.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
+        }
+
+        function nextSlide() {
+            if (currentLesson === null) return;
+
+            // Special line-by-line reveal for lesson 2 (Pretérito Indefinido)
+            if (currentLesson === 2) {
+                const currentSlideElement = slides[currentSlide];
+                const exampleTexts = currentSlideElement.querySelectorAll('.example-text');
+
+                // If we haven't initialized this slide yet
+                if (lineRevealState.currentLine === -1) {
+                    lineRevealState.currentLine = 0;
+                    lineRevealState.maxLines = exampleTexts.length;
+                    return; // Title already visible, wait for next click
+                }
+
+                // If there are more lines to reveal on this slide
+                if (lineRevealState.currentLine < lineRevealState.maxLines) {
+                    exampleTexts[lineRevealState.currentLine].classList.add('revealed');
+                    lineRevealState.currentLine++;
+                    return;
+                }
+            }
+
+            // All lines revealed or not lesson 2 - move to next slide
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                lineRevealState.currentLine = -1; // Reset for next slide
+                updateSlideView();
+            }
+        }
+
+        function prevSlide() {
+            if (currentLesson === null) return;
+
+            // Special line-by-line reveal for lesson 2
+            if (currentLesson === 2) {
+                const currentSlideElement = slides[currentSlide];
+                const exampleTexts = currentSlideElement.querySelectorAll('.example-text');
+
+                // If we have revealed lines on this slide, un-reveal the last one
+                if (lineRevealState.currentLine > 0) {
+                    lineRevealState.currentLine--;
+                    if (lineRevealState.currentLine > 0) {
+                        exampleTexts[lineRevealState.currentLine - 1].classList.remove('revealed');
+                    }
+                    return;
+                }
+            }
+
+            // Go to previous slide
+            if (currentSlide > 0) {
+                currentSlide--;
+                lineRevealState.currentLine = -1; // Reset
+                updateSlideView();
+
+                // If lesson 2, reveal all lines on previous slide
+                if (currentLesson === 2) {
+                    const prevSlideElement = slides[currentSlide];
+                    const prevExampleTexts = prevSlideElement.querySelectorAll('.example-text');
+                    lineRevealState.currentLine = prevExampleTexts.length;
+                    lineRevealState.maxLines = prevExampleTexts.length;
+                    prevExampleTexts.forEach(text => text.classList.add('revealed'));
+                }
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Event listeners
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            } else if (e.key === 'Escape') {
+                goToHome();
+            }
+        });
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }, false);
+
+        // Preload images
+        document.querySelectorAll('[data-bg]').forEach(slide => {
+            const bgUrl = slide.dataset.bg;
+            if (bgUrl) {
+                const img = new Image();
+                img.src = bgUrl;
+            }
+        });
+
+        // Initialize
+        slides = Array.from(document.querySelectorAll('.slide'));
+        populateMenu();
+        updateView();
+    </script>
+</body>
+</html>
