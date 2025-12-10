@@ -43,7 +43,7 @@ npx vercel --prod --yes
 
 ### Lesson 2: Pretérito Indefinido
 - 21 irregular verbs in preterite tense
-- **Line-by-line reveal feature**: Each verb slide progressively reveals example sentences
+- **Line-by-line reveal feature** (HTML version): Each verb slide progressively reveals example sentences
   - First arrow press: Title appears (e.g., "IR / SER – to go / to be")
   - Subsequent presses: Reveal one example sentence per click
   - After all sentences revealed: Next press advances to next verb
@@ -51,3 +51,14 @@ npx vercel --prod --yes
 - Smooth fade-in/fade-out transitions (0.5s)
 - Example sentences: 3.2rem font for back-of-class readability
 - Teacher has full control over timing of sentence reveals
+
+#### PowerPoint Export for Google Slides
+- **Script**: `generate_pptx.py` - Converts Lesson 2 to PowerPoint format
+- **Generated file**: `lesson2_export.pptx` (111 slides)
+- **Slide structure**:
+  - 1 title slide: "Pretérito Indefinido – Irregular Verbs"
+  - 21 verb title slides (one per irregular verb, 85pt bold, centered)
+  - 89 example sentence slides (4-5 per verb, 72pt VERY LARGE for classroom visibility)
+- **Design**: Maintains warm color scheme (cream text on brown backgrounds)
+- **Usage**: Export to Google Slides for traditional presentation format
+- **Setup**: `pip3 install -r requirements.txt && python3 generate_pptx.py`
